@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for Haunt Brunswick</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .time-slot { margin: 10px 0; }
+        .button { padding: 10px 20px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; }
+        form { display: inline-block; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>Register for a Time Slot</h1>
+    <p>Select a time slot for October 27th.</p>
+    <form id="registration-form" action="/submit" method="POST">
+        <div>
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label>Select Time Slot:</label>
+            <div id="time-slots">
+                <!-- Time slots will be populated here -->
+            </div>
+        </div>
+        <button class="button" type="submit">Register</button>
+    </form>
+
+    <script>
+        // Generate time slots from 6:00 PM to 9:00 PM, every 15 minutes
+        const timeSlots = [
+            '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM',
+            '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM',
+            '8:00 PM', '8:15 PM', '8:30 PM', '8:45 PM', '9:00 PM',
+        ];
+        const timeSlotContainer = document.getElementById('time-slots');
+
+        timeSlots.forEach(slot => {
+            const slotElement = document.createElement('div');
+            slotElement.className = 'time-slot';
+            slotElement.innerHTML = `
+                <input type="radio" id="${slot}" name="timeSlot" value="${slot}" required>
+                <label for="${slot}">${slot}</label>
+            `;
+            timeSlotContainer.appendChild(slotElement);
+        });
+    </script>
+</body>
+</html>
