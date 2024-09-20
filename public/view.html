@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View or Modify Your Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .button { padding: 10px 20px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; }
+        form { display: inline-block; text-align: left; }
+    </style>
+    <link rel="stylesheet" href="spooky-theme.css">
+
+</head>
+<body>
+    <h1>View or Modify Your Registration</h1>
+    <form id="view-form" action="/view-registration" method="POST">
+        <div>
+            <label for="registration_number">Registration Number:</label>
+            <input type="text" id="registration_number" name="registration_number" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <button class="button" type="submit">View Registration</button>
+    </form>
+
+    <div id="registration-details"></div>
+
+    <script>
+        // Remove individual attendees
+        function removeAttendee(index) {
+            const attendeeElement = document.getElementById(`attendee-${index}`);
+            attendeeElement.remove();
+        }
+
+        // Confirm before removing all attendees
+        function confirmRemoveAll() {
+            const attendeeElements = document.querySelectorAll('.attendee');
+
+            if (attendeeElements.length === 0) {
+                alert("No registrants to remove.");
+                return;
+            }
+
+            const confirmed = confirm("Are you sure you want to remove all registrants?");
+            if (confirmed) {
+                attendeeElements.forEach(attendee => attendee.remove());
+            }
+        }
+    </script>
+</body>
+</html>

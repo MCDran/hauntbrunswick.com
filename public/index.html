@@ -4,15 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haunt Brunswick</title>
+    <link rel="stylesheet" href="spooky-theme.css">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        .button { padding: 10px 20px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0b0c0d; /* Ensure dark spooky background */
+        }
+
+        .content {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive, sans-serif;
+            font-size: 4rem;
+            color: #ff4444;
+            text-shadow: 3px 3px 10px black;
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: #ffcc00;
+            text-shadow: 1px 1px 5px black;
+            margin: 20px 0;
+        }
+
+        a.button {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            margin: 20px 0;
+        }
+
+        /* Glow effect for button hover */
+        a.button:hover {
+            animation: glow 1.5s infinite alternate;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to Haunt Brunswick</h1>
-    <p>Join us on October 27th!</p>
-    <a href="/register.html" class="button">Register for a Time Slot</a>
-    <p>V0.1</p>
+    <div class="content">
+        <h1>Welcome to Haunt Brunswick</h1>
+        <p class="index-date">Join us on October 27th!</p>
+        <a href="/register.html" class="button">Pick a Time</a>
+        <p class="version">V0.1</p>
+    </div>
+    <!-- Blood overlay effect -->
+    <div id="overlay">  <div class="circle3"></div></div>
 </body>
 </html>

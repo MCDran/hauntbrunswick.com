@@ -1,0 +1,278 @@
+/* spooky-theme.css */
+
+/* Global styles */
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+body {
+    background-color: #0b0c0d;
+    color: #e0e0e0;
+    font-family: 'Creepster', cursive, sans-serif;
+    text-align: center;
+    padding: 50px;
+    margin: 0;
+    background-image: url('https://i.pinimg.com/originals/4e/f5/ed/4ef5ed23dd7614b990195ae96bc6e678.jpg'); /* Add a spooky background image here */
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+/* Ensure proper Flexbox layout */
+form#registration-form {
+    display: flex;               /* Ensure form is flexbox container */
+    flex-direction: row;          /* Horizontal layout */
+    justify-content: space-between; /* Ensure space between time-slots and registrations */
+    gap: 20px;                    /* Space between sections */
+    align-items: flex-start;      /* Align items at the top */
+}
+
+/* Ensure time slots and registration section take up space evenly */
+.time-slots, #registrations {
+    flex: 1;               /* Allow them to take equal space */
+    padding: 10px;
+    min-width: 0;
+    box-sizing: border-box; /* Prevents overflow */
+}
+
+.time-slots {
+    max-width: 300px;       /* Restrict time slots width */
+}
+
+/* Ensure inputs do not stretch full width */
+input[type="text"], input[type="email"], select {
+    width: 100%;           /* Make input fields full width */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ff4444;
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+/* Responsive design: stack vertically on smaller screens */
+@media (max-width: 768px) {
+    .registration-container {
+        flex-direction: column; /* Stack time slots and form vertically */
+    }
+
+    .time-slots, #registrations {
+        max-width: 100%; /* Full width on smaller screens */
+    }
+}
+
+/* Dark background for the text on the index page */
+.index-text {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block; /* Ensure the background only covers the text */
+    color: #fff; /* Ensure text color is white for readability */
+    margin-bottom: 20px; /* Add some space below the text block */
+}
+
+/* Make the title larger */
+h1.index-title {
+    font-size: 3rem; /* Adjust the size as needed */
+    color: #ff4444; /* Optional: Add a spooky red color */
+    text-shadow: 2px 2px 10px #000;
+}
+
+/* Make the date larger */
+.index-date {
+    font-size: 1.5rem; /* Adjust to the size you prefer */
+    color: #ffcc00; /* Optional: Highlight the date with a contrasting color */
+    text-shadow: 1px 1px 5px #000;
+}
+
+
+/* Headings */
+h1, h2 {
+    color: #ff4444;
+    text-shadow: 2px 2px 10px #000;
+}
+
+/* Buttons */
+.button {
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 2px solid #ff4444;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button:hover {
+    background-color: #ff4444;
+    color: #000;
+    box-shadow: 0 0 15px #ff4444;
+}
+
+/* Form styles */
+form {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+    text-align: left;
+}
+
+/* Input and select fields */
+input[type="text"], input[type="email"], select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    margin-right: 20px;
+    border-radius: 5px;
+    border: 1px solid #ff4444;
+    background-color: #8B0000; /* Dark red background */
+    color: #fff;
+}
+
+input:-webkit-autofill {
+    background-color: #8B0000 !important; /* Dark red background for autofill */
+    color: #fff !important; /* Text color */
+    border: 1px solid #ff4444 !important; /* Your border styling */
+}
+
+/* Optional: style for focus */
+input:-webkit-autofill:focus {
+    background-color: #8B0000 !important; /* Keep the dark red background on focus */
+    color: #fff !important; /* Text color */
+}
+
+.form-control:focus, .form-control:active {
+    background: transparent; /* Set the background to transparent on focus or active */
+    color: #fff; /* Ensure the text remains visible */
+    outline: none; /* Remove any default focus outline */
+    border: 1px solid #ff4444; /* Optional: Add your own border to indicate focus */
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+
+label {
+    color: #ffcccc;
+}
+
+/* Time slots */
+.time-slot {
+    margin: 10px 0;
+    color: #fff;
+}
+
+/* Attendee removal */
+.remove-button {
+    color: red;
+    cursor: pointer;
+}
+
+.remove-button:hover {
+    color: darkred;
+}
+
+/* Glowing effect for spooky feel */
+@keyframes glow {
+    0% { text-shadow: 0 0 5px #ff4444, 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 30px #ff4444; }
+    50% { text-shadow: 0 0 10px #ff8888, 0 0 20px #ff8888, 0 0 40px #ff8888, 0 0 50px #ff8888; }
+    100% { text-shadow: 0 0 5px #ff4444, 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 30px #ff4444; }
+}
+
+/* Glow effect on hover for headings */
+h1:hover, h2:hover {
+    animation: glow 1.5s infinite alternate;
+}
+
+/* Fullscreen black background overlay */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  z-index: 1000;
+  animation: overlayAnimation 6s ease-in-out forwards;
+  overflow: hidden;
+}
+
+/* Red circle 1 overlay */
+#overlay::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw; /* Making the width and height equal and based on viewport width */
+  height: 100vw;
+  background: red;
+  border-radius: 50%; /* Ensures the shape is circular */
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 1001;
+  animation: circleAnimation 6s ease-in-out forwards;
+}
+
+/* Red circle 2 overlay */
+#overlay::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  width: 70vw; /* Making the width and height equal */
+  height: 70vw;
+  background: red;
+  border-radius: 50%; /* Ensures the shape is circular */
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 1001;
+  animation: circleAnimation 6s ease-in-out forwards;
+}
+
+/* Red circle 3 overlay */
+.circle3 {
+  position: absolute;
+  top: 45%;
+  left: 80%;
+  width: 100vw; /* Making the width and height equal */
+  height: 100vw;
+  background: red;
+  border-radius: 50%; /* Ensures the shape is circular */
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 1001;
+  animation: circleAnimation 6s ease-in-out forwards;
+}
+
+/* Keyframes for the black background animation */
+@keyframes overlayAnimation {
+  0% {
+    background: black; /* Full black background at start */
+  }
+  60% {
+    background: black;
+  }
+  80% {
+    background: red; /* Stays red once the red circles cover the screen */
+  }
+  100% {
+    background: transparent; /* Fades out to show content */
+    opacity: 0; /* Fade out the black/red background */
+  }
+}
+
+/* Keyframes for the red circles animation */
+@keyframes circleAnimation {
+  0% {
+    transform: translate(-50%, -50%) scale(0); /* Start as a pinpoint */
+    opacity: 1; /* Red circle fully visible */
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1); /* Expand red circle to full screen */
+  }
+  80% {
+    transform: translate(-50%, -50%) scale(1); /* Keep the circle at full size */
+    opacity: 1; /* Red circle stays fully visible */
+  }
+  90% {
+    opacity: 0.5; /* Start fading the red circle */
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1); /* Circle remains full size */
+    opacity: 0; /* Fully fade out the red circle */
+  }
+}

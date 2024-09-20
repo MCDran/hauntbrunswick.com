@@ -4,52 +4,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register for Haunt Brunswick</title>
+    <!-- Ensure the spooky theme and font are applied -->
+    <link rel="stylesheet" href="spooky-theme.css">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .time-slot { margin: 10px 0; }
-        .button { padding: 10px 20px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; }
-        form { display: inline-block; text-align: left; }
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        color: #fff; /* Ensure text is readable */
+    }
+
+    /* Apply Creepster font only to titles */
+    h1, h3 {
+        font-family: 'Creepster', cursive, sans-serif;
+        text-shadow: none; /* Remove glow */
+    }
+
+    /* Shared container for both time slots and form */
+    .registration-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.8); /* Single black box */
+        border-radius: 10px;
+        box-shadow: none; /* Remove any glow around the box */
+        max-width: 800px;
+        margin: 20px auto; /* Center the box and add margin */
+        color: #fff;
+        flex-wrap: wrap; /* Responsive wrapping */
+    }
+
+    .time-slots {
+        flex: 1;
+        max-width: 300px;
+        padding: 10px; /* Add padding inside time slots area */
+    }
+
+    #registrations {
+        flex: 2;
+        padding: 10px; /* Add padding to the registration form section */
+    }
+
+    .time-slot {
+        margin: 10px 0;
+    }
+
+    /* Remove form borders and box styling */
+    form {
+        background-color: transparent; /* Ensure no background color */
+        border: none; /* Remove any border */
+        padding: 0; /* Remove padding */
+        text-align: left; /* Keep form alignment */
+    }
+
+    .button {
+        padding: 10px 20px;
+        background-color: #000;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        border: 2px solid #ff4444;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #ff4444;
+        color: #000;
+        box-shadow: 0 0 10px #ff4444;
+    }
+
+    .attendee {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .remove-button {
+        padding: 5px 10px;
+        background-color: #ff4444;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .remove-button:hover {
+        background-color: darkred;
+    }
+
+    /* Ensure new participants are added inside the box */
+    #attendee-list {
+        margin-top: 10px;
+    }
+
+    /* Padding around inputs to prevent them from touching edges */
+    input[type="text"], input[type="email"], select {
+        width: calc(100% - 20px); /* Ensure inputs don’t stretch to edge */
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ff4444;
+        background-color: #1a1a1a;
+        color: #fff;
+    }
+
+    /* Responsive design: stack time slots and form vertically on smaller screens */
+    @media (max-width: 768px) {
+        .registration-container {
+            flex-direction: column; /* Stack vertically on small screens */
+        }
+
+        .time-slots, #registrations {
+            max-width: 100%; /* Full width for small screens */
+        }
+    }
     </style>
 </head>
 <body>
     <h1>Register for a Time Slot</h1>
     <p>Select a time slot for October 27th.</p>
-    <form id="registration-form" action="/submit" method="POST">
-        <div>
-            <label for="name">Your Name:</label>
-            <input type="text" id="name" name="name" required>
-        </div>
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div>
-            <label>Select Time Slot:</label>
-            <div id="time-slots">
-                <!-- Time slots will be populated here -->
+
+    <!-- Container for the time slots and registration form (in one black box) -->
+    <div class="registration-container">
+        <!-- Keep everything inside the form -->
+        <form id="registration-form" action="/submit" method="POST">
+
+            <!-- Time slots section -->
+            <div class="time-slots">
+                <h3>Select Time Slot</h3>
+                <div id="time-slots">
+                    <!-- Time slots will be populated here via fetch -->
+                </div>
             </div>
-        </div>
-        <button class="button" type="submit">Register</button>
-    </form>
 
+            <!-- Registration form section -->
+            <div id="registrations">
+                <h3>Register Attendees</h3>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+
+                <div class="attendee" id="attendee-1">
+                    <label for="name1">Name:</label>
+                    <input type="text" id="name1" name="names[]" class="form-control" required>
+                    <label for="age1">Age:</label>
+                    <select id="age1" name="ages[]" required>
+                        <option value="" disabled selected>Select age</option>
+                        <option value="16-20">16-20</option>
+                        <option value="21-30">21-30</option>
+                        <option value="31-40">31-40</option>
+                        <option value="41-50">41-50</option>
+                        <option value="51+">51+</option>
+                    </select>
+                </div>
+
+                <div id="attendee-list"></div>
+
+                <button class="button" type="button" id="add-attendee">Add Another Attendee</button><br><br>
+                <button class="button" type="submit">Register</button>
+            </div>
+
+        </form>
+    </div>
     <script>
-        // Generate time slots from 6:00 PM to 9:00 PM, every 15 minutes
-        const timeSlots = [
-            '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM',
-            '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM',
-            '8:00 PM', '8:15 PM', '8:30 PM', '8:45 PM', '9:00 PM',
-        ];
-        const timeSlotContainer = document.getElementById('time-slots');
+        // Fetch available time slots and remaining spots from the backend
+        fetch('/spots')
+            .then(response => response.json())
+            .then(data => {
+                const timeSlotContainer = document.getElementById('time-slots');
 
-        timeSlots.forEach(slot => {
-            const slotElement = document.createElement('div');
-            slotElement.className = 'time-slot';
-            slotElement.innerHTML = `
-                <input type="radio" id="${slot}" name="timeSlot" value="${slot}" required>
-                <label for="${slot}">${slot}</label>
+                data.forEach(slot => {
+                    const slotElement = document.createElement('div');
+                    slotElement.className = 'time-slot';
+                    slotElement.innerHTML = `
+                        <input type="radio" id="${slot.time_slot}" name="timeSlot" value="${slot.time_slot}" required>
+                        <label for="${slot.time_slot}">${slot.time_slot} (${slot.spots_remaining} spots left)</label>
+                    `;
+                    timeSlotContainer.appendChild(slotElement);
+                });
+            })
+            .catch(err => {
+                console.error('Error fetching time slots:', err);
+            });
+
+        const attendeeList = document.getElementById('attendee-list');
+        let attendeeCount = 1;
+
+        // Add new attendee fields
+        document.getElementById('add-attendee').addEventListener('click', () => {
+            attendeeCount++;
+            const newAttendee = document.createElement('div');
+            newAttendee.className = 'attendee';
+            newAttendee.id = `attendee-${attendeeCount}`;
+            newAttendee.innerHTML = `
+                <label for="name${attendeeCount}">Name:</label>
+                <input type="text" id="name${attendeeCount}" name="names[]" required>
+                <label for="age${attendeeCount}">Age:</label>
+                <select id="age${attendeeCount}" name="ages[]" required>
+                    <option value="" disabled selected>Select age</option>
+                    <option value="16-20">16-20</option>
+                    <option value="21-30">21-30</option>
+                    <option value="31-40">31-40</option>
+                    <option value="41-50">41-50</option>
+                    <option value="51+">51+</option>
+                </select>
+                <button type="button" class="remove-button" onclick="removeAttendee('attendee-${attendeeCount}')">Remove</button>
             `;
-            timeSlotContainer.appendChild(slotElement);
+            attendeeList.appendChild(newAttendee); // Append the new attendee inside the attendee list div
         });
+
+        // Remove attendee fields
+        function removeAttendee(attendeeId) {
+            const attendeeElement = document.getElementById(attendeeId);
+            attendeeElement.remove();
+        }
     </script>
 </body>
 </html>
