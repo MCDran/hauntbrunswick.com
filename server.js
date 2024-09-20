@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const crypto = require('crypto');  // For generating registration numbers
+const nodemailer = require('nodemailer');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,6 +32,44 @@ connection.query('SELECT 1 + 1 AS solution', (err, results) => {
         console.log('Test query successful, solution:', results[0].solution);
     }
 });
+
+const transporter = nodemailer.createTransport({
+    host: 'smtpout.secureserver.net', // GoDaddy SMTP server
+    port: 465, // Secure port for SSL
+    secure: true, // Use SSL
+    auth: {
+        user: 'donotreply@hauntbrunswick.com', // Your GoDaddy email
+        pass: 'SLEEP4tG' // Your GoDaddy email password
+    }
+});
+
+function sendRegistrationEmail(email, registrationNumber, timeSlot, names, date, viewUrl) {
+    const emailContent = `
+        <h1>Thank you for registering!</h1>
+        <p>You have registered for the following time slot on <strong>${date}</strong>:</p>
+        <p><strong>Time Slot:</strong> ${timeSlot}</p>
+        <p><strong>Registration Number:</strong> ${registrationNumber}</p>
+        <p><strong>Registered Participants:</strong> ${names.join(', ')}</p>
+        <p>You can view or modify your registration by visiting the following link:</p>
+        <a href="${viewUrl}">View Registration</a>
+    `;
+
+    const mailOptions = {
+        from: '"Haunt Brunswick" <your-godaddy-email@example.com>', // Sender address
+        to: email, // List of recipients
+        subject: 'Your Registration for Haunt Brunswick', // Subject line
+        html: emailContent // HTML body
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            console.error('Error sending email:', err);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+}
 
 // In-memory storage of available spots (this could also be in the database)
 let availableSlots = {
@@ -476,6 +515,10 @@ app.post('/submit', (req, res) => {
                         <a href="/register.html">Go back</a>
                     `);
                 }
+
+                //Send email
+                const viewUrl = `https://your-domain.com/view-registration?number=${registrationNumber}`;
+                sendRegistrationEmail(email, registrationNumber, timeSlot, names, date, viewUrl);
 
                 // Return a confirmation
                 res.send(`
