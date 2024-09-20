@@ -1,0 +1,15 @@
+{
+  "name": "hauntBrunswick",
+  "version": "0.2.0D",
+  "description": "Website framework for hauntbrunswick.com Andrew Davis",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0",
+    "mysql2": "^2.2.5",
+    "crypto": "^1.0.1"
+  }
+}
