@@ -10,7 +10,7 @@ app.use(express.static('public'));
 
 // MySQL connection setup
 const connection = mysql.createConnection({
-    host: '192.168.100.100',  // Change to the appropriate host if needed
+    host: '100.87.150.78',  // 192.168.100.100
     port: '3667',
     user: 'valak',
     password: 'SLEEP4tG',
@@ -34,28 +34,31 @@ connection.query('SELECT 1 + 1 AS solution', (err, results) => {
 });
 
 const transporter = nodemailer.createTransport({
-    host: 'smtpout.secureserver.net', // GoDaddy SMTP server
-    port: 465, // Secure port for SSL
-    secure: true, // Use SSL
+    host: 'smtp.office365.com',
+    port: 587,
+    secure: false, // Use TLS
     auth: {
-        user: 'donotreply@hauntbrunswick.com', // Your GoDaddy email
-        pass: 'SLEEP4tG' // Your GoDaddy email password
+        user: 'donotreply@hauntbrunswick.com', // Your Office 365 email
+        pass: 'vsjwbdbfhvqrvyqw' // Your Office 365 app password
+    },
+    tls: {
+        rejectUnauthorized: false // This might help if there's an issue with the certificate
     }
 });
 
-function sendRegistrationEmail(email, registrationNumber, timeSlot, names, date, viewUrl) {
+function sendRegistrationEmail(email, registrationNumber, timeSlot, names, viewUrl) {
     const emailContent = `
         <h1>Thank you for registering!</h1>
-        <p>You have registered for the following time slot on <strong>${date}</strong>:</p>
+        <p>You have registered for the following time slot on <strong>Sunday, October 27th</strong>:</p>
         <p><strong>Time Slot:</strong> ${timeSlot}</p>
         <p><strong>Registration Number:</strong> ${registrationNumber}</p>
         <p><strong>Registered Participants:</strong> ${names.join(', ')}</p>
         <p>You can view or modify your registration by visiting the following link:</p>
-        <a href="${viewUrl}">View Registration</a>
+        <a href="hauntbwick.frontiermediaserver.net/view.html">View Registration</a>
     `;
 
     const mailOptions = {
-        from: '"Haunt Brunswick" <your-godaddy-email@example.com>', // Sender address
+        from: '"Haunt Brunswick" <donotreply@hauntbrunswick.com>', // Sender address
         to: email, // List of recipients
         subject: 'Your Registration for Haunt Brunswick', // Subject line
         html: emailContent // HTML body
@@ -518,7 +521,7 @@ app.post('/submit', (req, res) => {
 
                 //Send email
                 const viewUrl = `https://your-domain.com/view-registration?number=${registrationNumber}`;
-                sendRegistrationEmail(email, registrationNumber, timeSlot, names, date, viewUrl);
+                sendRegistrationEmail(email, registrationNumber, timeSlot, names, viewUrl);
 
                 // Return a confirmation
                 res.send(`
