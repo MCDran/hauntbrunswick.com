@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        #scanner-container {
+            margin-top: 20px;
+        }
+        #video {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border: 2px solid #333;
+            background-color: #000;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: green;
+        }
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scan Registrant QR Code</h1>
+    <div id="scanner-container">
+        <video id="video" autoplay></video>
+    </div>
+    <div id="output"></div>
+    <button class="button" id="check-in-btn" style="display:none;">Check In</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/instascan@1.0.0/instascan.min.js"></script>
+    <script>
+        const videoElement = document.getElementById('video');
+        const outputElement = document.getElementById('output');
+        const checkInBtn = document.getElementById('check-in-btn');
+
+        // Initialize the scanner
+        const scanner = new Instascan.Scanner({ video: videoElement });
+        scanner.addListener('scan', function(content) {
+            outputElement.textContent = `Scanned Content: ${content}`;
+            checkInBtn.style.display = 'block';  // Show the check-in button after scan
+
+            // Parse the scanned content (assuming it's in the format registrationNumber:email)
+            const [registrationNumber, email] = content.split(':');
+
+            // Send the scanned data to the server for validation
+            fetch('/checkin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ registrationNumber, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
+                } else {
+                    outputElement.textContent = 'Registrant not found!';
+                }
+            })
+            .catch(error => {
+                outputElement.textContent = 'Error processing the QR code.';
+                console.error('Error:', error);
+            });
+        });
+
+        // Access camera and start scanning
+        Instascan.Camera.getCameras().then(function(cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]); // Start scanning using the first available camera
+            } else {
+                alert('No cameras found.');
+            }
+        }).catch(function(e) {
+            console.error(e);
+        });
+    </script>
+</body>
+</html>

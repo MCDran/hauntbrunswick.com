@@ -3,10 +3,13 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const crypto = require('crypto');  // For generating registration numbers
 const nodemailer = require('nodemailer');
+const QRCode = require('qrcode');
+const path = require('path');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(express.json());
 
 // MySQL connection setup
 const connection = mysql.createConnection({
@@ -46,33 +49,91 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-function sendRegistrationEmail(email, registrationNumber, timeSlot, names, viewUrl) {
+async function sendRegistrationEmail(email, registrationNumber, timeSlot, names, viewUrl) {
+    // Generate the QR code
+    const qrCodeURL = await generateQRCode(registrationNumber, email);
+    const qrCodeData = `${registrationNumber}:${email}`;
+    const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
+    console.log(qrCodeURL);
+
+    // Email content with the embedded QR code
     const emailContent = `
         <h1>Thank you for registering!</h1>
         <p>You have registered for the following time slot on <strong>Sunday, October 27th</strong>:</p>
-        <p><strong>Time Slot:</strong> ${timeSlot}</p>
-        <p><strong>Registration Number:</strong> ${registrationNumber}</p>
-        <p><strong>Registered Participants:</strong> ${names.join(', ')}</p>
-        <p>You can view or modify your registration by visiting the following link:</p>
-        <a href="hauntbwick.frontiermediaserver.net/view.html">View Registration</a>
+        <p>Time Slot: ${timeSlot}</p>
+        <p>Names of attendees: ${names.join(', ')}</p>
+        <p>You can view your registration details at <a href="${viewUrl}">this link</a>.</p>
+        <p>Use the QR code below when checking in:</p>
+        <img src="cid:qrCode" alt="QR Code" />
     `;
 
+    // Use Nodemailer to send the email (you likely have this setup already)
     const mailOptions = {
-        from: '"Haunt Brunswick" <donotreply@hauntbrunswick.com>', // Sender address
-        to: email, // List of recipients
-        subject: 'Your Registration for Haunt Brunswick', // Subject line
-        html: emailContent // HTML body
+        from: 'donotreply@hauntbrunswick.com',
+        to: email,
+        subject: 'Your Haunted House Registration Confirmation',
+        html: emailContent,
+        attachments: [{
+          filename: 'qrcode.png',
+          content: qrCodeBuffer,
+          cid: 'qrCode'  // Same CID as in the email content
+        }]
     };
 
     // Send the email
-    transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            console.error('Error sending email:', err);
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
         } else {
-            console.log('Email sent:', info.response);
+            console.log('Email sent: ' + info.response);
         }
     });
 }
+
+async function generateQRCode(registrationNumber, email) {
+  try {
+    const qrCodeData = `${registrationNumber}:${email}`; // The data you want to encode in the QR code
+    const qrCodeURL = await QRCode.toDataURL(qrCodeData); // Generates a base64 image URL
+    return qrCodeURL;
+  } catch (err) {
+    console.error('Failed to generate QR Code', err);
+    throw err;
+  }
+}
+
+app.get('/checkin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/checkin/index.html'));
+});
+
+// API route to handle QR code scan data
+app.post('/checkin', (req, res) => {
+  const { registrationNumber, email } = req.body;
+
+  // Lookup logic: You would fetch the registrant's details from your database here.
+  // For now, let's simulate this with a simple check.
+
+  // Simulated registrant data (replace this with actual database lookup)
+  const mockRegistrant = {
+    registrationNumber: '123456',
+    email: 'user@example.com',
+    name: 'John Doe',
+    timeSlot: '7:00 PM'
+  };
+
+  // Check if the scanned data matches the mock registrant data
+  if (registrationNumber === mockRegistrant.registrationNumber && email === mockRegistrant.email) {
+    res.status(200).json({
+      success: true,
+      message: 'Registrant found!',
+      registrant: mockRegistrant
+    });
+  } else {
+    res.status(404).json({
+      success: false,
+      message: 'Registrant not found!'
+    });
+  }
+});
 
 // In-memory storage of available spots (this could also be in the database)
 let availableSlots = {
@@ -390,6 +451,17 @@ app.get('/admin', checkAdminAuth, (req, res) => {
         html += '</table>';
         res.send(html);
     });
+});
+
+app.post('/register', async (req, res) => {
+    const { email, registrationNumber, timeSlot, names, viewUrl } = req.body;
+
+    try {
+        await sendRegistrationEmail(email, registrationNumber, timeSlot, names, viewUrl);
+        res.status(200).send('Registration successful, email sent.');
+    } catch (error) {
+        res.status(500).send('Registration successful, but email failed.');
+    }
 });
 
 app.post('/admin/delete', checkAdminAuth, (req, res) => {

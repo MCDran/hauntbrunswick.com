@@ -10,7 +10,8 @@
     "body-parser": "^1.19.0",
     "crypto": "^1.0.1",
     "express": "^4.17.1",
-    "mysql2": "^2.2.5",
-    "nodemailer": "^6.9.15"
+    "mysql2": "^3.11.3",
+    "nodemailer": "^6.9.15",
+    "qrcode": "^1.5.4"
   }
 }
