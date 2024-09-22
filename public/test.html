@@ -53,18 +53,14 @@
   const outputElement = document.getElementById('output');
   const checkInBtn = document.getElementById('check-in-btn');
 
-  // Function to start the camera stream with environment (rear) camera
-  function startCamera() {
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { exact: "environment" } }
-    })
-    .then(stream => {
-      videoElement.srcObject = stream;
-    })
-    .catch(error => {
-      console.error('Error accessing the environment camera:', error);
-      alert('Unable to access the environment camera. Make sure you have granted camera permissions.');
-    });
+  // Function to start the QR scanner using the back camera
+  function startScanner(cameras) {
+    if (cameras.length > 0) {
+      const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back')) || cameras[0]; // Prioritize back camera
+      scanner.start(backCamera);
+    } else {
+      alert('No cameras found.');
+    }
   }
 
   // Initialize the QR code scanner
@@ -96,18 +92,12 @@
     });
   });
 
-  // Function to start the scanner and access the environment camera
-  function startScanner(cameras) {
-    if (cameras.length > 0) {
-      startCamera();  // Start the environment camera
-    } else {
-      alert('No cameras found.');
-    }
-  }
-
-  // Load available cameras and start the scanner
-  Instascan.Camera.getCameras().then(startScanner).catch(function(e) {
+  // Fetch available cameras and start the scanner
+  Instascan.Camera.getCameras().then(function(cameras) {
+    startScanner(cameras); // Start the scanner with camera selection
+  }).catch(function(e) {
     console.error('Error with camera:', e);
+    alert('Unable to access camera.');
   });
 
   </script>
