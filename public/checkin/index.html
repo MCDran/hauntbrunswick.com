@@ -115,7 +115,7 @@
 
         navigator.mediaDevices.getUserMedia({
           video: {
-              facingMode: { exact: "environment" }  // Request the back camera
+              facingMode: "environment"  // Request the back camera
           }})
         .then(function(stream) {
             videoElement.srcObject = stream; // Directly assign the stream
