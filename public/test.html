@@ -47,7 +47,6 @@
   <canvas id="canvas"></canvas>
   <div id="output"></div>
   <button id="check-in-btn" style="display:none;">Check In</button>
-
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
     const videoElement = document.getElementById('video');
@@ -63,7 +62,9 @@
       })
       .then(stream => {
         videoElement.srcObject = stream;
-        requestAnimationFrame(scanQRCode); // Start scanning
+        videoElement.onloadedmetadata = () => {
+          requestAnimationFrame(scanQRCode); // Start scanning only after video metadata is loaded
+        };
       })
       .catch(error => {
         console.error('Error accessing the environment camera:', error);
@@ -73,39 +74,45 @@
 
     // Function to scan the QR code from the video stream
     function scanQRCode() {
-      canvasElement.width = videoElement.videoWidth;
-      canvasElement.height = videoElement.videoHeight;
-      canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+      if (videoElement.videoWidth && videoElement.videoHeight) {
+        // Draw the video frame to the canvas
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+        canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-      const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+        const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
 
-      if (code) {
-        outputElement.textContent = `Scanned Content: ${code.data}`;
-        checkInBtn.style.display = 'block';
+        if (code) {
+          console.log("QR Code detected!", code);  // Debugging: log detected QR code
+          outputElement.textContent = `Scanned Content: ${code.data}`;
+          checkInBtn.style.display = 'block';
 
-        const [registrationNumber, email] = code.data.split(':');
+          const [registrationNumber, email] = code.data.split(':');
 
-        // Make your fetch call to verify registration
-        fetch('/checkin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ registrationNumber, email })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
-            } else {
-                outputElement.textContent = 'Registrant not found!';
-            }
-        })
-        .catch(error => {
-            outputElement.textContent = 'Error processing the QR code.';
-            console.error('Error:', error);
-        });
+          // Make your fetch call to verify registration
+          fetch('/checkin', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ registrationNumber, email })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
+              } else {
+                  outputElement.textContent = 'Registrant not found!';
+              }
+          })
+          .catch(error => {
+              outputElement.textContent = 'Error processing the QR code.';
+              console.error('Error:', error);
+          });
+        } else {
+          console.log("No QR Code detected in this frame.");  // Debugging: log no detection
+        }
       }
 
       requestAnimationFrame(scanQRCode); // Continuously scan for QR codes
@@ -113,6 +120,6 @@
 
     // Start the camera when the page loads
     window.onload = startCamera;
-  </script>
+  </script
 </body>
 </html>
