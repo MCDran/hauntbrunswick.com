@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
-    <script type="text/javascript" src="/js/instascan.min.js"></script>
+    <title>QR Code Scanner with jsQR</title>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -15,9 +14,6 @@
     }
     h1 {
         color: #333;
-    }
-    #scanner-container {
-        margin-top: 20px;
     }
     #video {
         width: 100%;
@@ -31,6 +27,9 @@
         font-size: 1.2em;
         color: green;
     }
+    canvas {
+        display: none; /* Hide the canvas */
+    }
     .button {
         background-color: #28a745;
         color: white;
@@ -40,66 +39,80 @@
         border-radius: 5px;
         cursor: pointer;
     }
-</style>
+    </style>
 </head>
 <body>
   <h1>Scan Registrant QR Code</h1>
   <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
   <div id="output"></div>
   <button id="check-in-btn" style="display:none;">Check In</button>
 
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
-  const videoElement = document.getElementById('video');
-  const outputElement = document.getElementById('output');
-  const checkInBtn = document.getElementById('check-in-btn');
+    const videoElement = document.getElementById('video');
+    const canvasElement = document.getElementById('canvas');
+    const canvasContext = canvasElement.getContext('2d');
+    const outputElement = document.getElementById('output');
+    const checkInBtn = document.getElementById('check-in-btn');
 
-  // Function to start the QR scanner using the back camera
-  function startScanner(cameras) {
-    if (cameras.length > 0) {
-      const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back')) || cameras[0]; // Prioritize back camera
-      scanner.start(backCamera);
-    } else {
-      alert('No cameras found.');
+    // Function to start the camera stream using the back camera
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } }
+      })
+      .then(stream => {
+        videoElement.srcObject = stream;
+        requestAnimationFrame(scanQRCode); // Start scanning
+      })
+      .catch(error => {
+        console.error('Error accessing the environment camera:', error);
+        alert('Unable to access the environment camera. Make sure you have granted camera permissions.');
+      });
     }
-  }
 
-  // Initialize the QR code scanner
-  const scanner = new Instascan.Scanner({ video: videoElement });
-  scanner.addListener('scan', function(content) {
-    outputElement.textContent = `Scanned Content: ${content}`;
-    checkInBtn.style.display = 'block';
+    // Function to scan the QR code from the video stream
+    function scanQRCode() {
+      canvasElement.width = videoElement.videoWidth;
+      canvasElement.height = videoElement.videoHeight;
+      canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-    const [registrationNumber, email] = content.split(':');
+      const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
 
-    fetch('/checkin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ registrationNumber, email })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
-        } else {
-            outputElement.textContent = 'Registrant not found!';
-        }
-    })
-    .catch(error => {
-        outputElement.textContent = 'Error processing the QR code.';
-        console.error('Error:', error);
-    });
-  });
+      if (code) {
+        outputElement.textContent = `Scanned Content: ${code.data}`;
+        checkInBtn.style.display = 'block';
 
-  // Fetch available cameras and start the scanner
-  Instascan.Camera.getCameras().then(function(cameras) {
-    startScanner(cameras); // Start the scanner with camera selection
-  }).catch(function(e) {
-    console.error('Error with camera:', e);
-    alert('Unable to access camera.');
-  });
+        const [registrationNumber, email] = code.data.split(':');
 
+        // Make your fetch call to verify registration
+        fetch('/checkin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ registrationNumber, email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
+            } else {
+                outputElement.textContent = 'Registrant not found!';
+            }
+        })
+        .catch(error => {
+            outputElement.textContent = 'Error processing the QR code.';
+            console.error('Error:', error);
+        });
+      }
+
+      requestAnimationFrame(scanQRCode); // Continuously scan for QR codes
+    }
+
+    // Start the camera when the page loads
+    window.onload = startCamera;
   </script>
 </body>
 </html>
