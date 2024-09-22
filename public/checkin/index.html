@@ -49,69 +49,94 @@
   <button id="check-in-btn" style="display:none;">Check In</button>
 
   <script>
-  const videoElement = document.getElementById('video');
-  const outputElement = document.getElementById('output');
-  const checkInBtn = document.getElementById('check-in-btn');
+      const videoElement = document.getElementById('video');
+      const outputElement = document.getElementById('output');
+      const checkInBtn = document.getElementById('check-in-btn');
 
-  // Initialize the scanner
-  const scanner = new Instascan.Scanner({ video: videoElement });
-  scanner.addListener('scan', function(content) {
-      outputElement.textContent = `Scanned Content: ${content}`;
-      checkInBtn.style.display = 'block';  // Show the check-in button after scan
+      // Initialize the scanner
+      const scanner = new Instascan.Scanner({ video: videoElement });
+      scanner.addListener('scan', function(content) {
+          outputElement.textContent = `Scanned Content: ${content}`;
+          checkInBtn.style.display = 'block';  // Show the check-in button after scan
 
-      // Parse the scanned content (assuming it's in the format registrationNumber:email)
-      const [registrationNumber, email] = content.split(':');
+          // Parse the scanned content (assuming it's in the format registrationNumber:email)
+          const [registrationNumber, email] = content.split(':');
 
-      // Send the scanned data to the server for validation
-      fetch('/checkin', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ registrationNumber, email })
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
-          } else {
-              outputElement.textContent = 'Registrant not found!';
-          }
-      })
-      .catch(error => {
-          outputElement.textContent = 'Error processing the QR code.';
-          console.error('Error:', error);
+          // Send the scanned data to the server for validation
+          fetch('/checkin', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ registrationNumber, email })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
+              } else {
+                  outputElement.textContent = 'Registrant not found!';
+              }
+          })
+          .catch(error => {
+              outputElement.textContent = 'Error processing the QR code.';
+              console.error('Error:', error);
+          });
       });
-  });
 
-  // Updated camera selection logic
-  Instascan.Camera.getCameras().then(function (cameras) {
-      // If a camera is detected
-      if (cameras.length > 0) {
-          // If the user has a rear/back camera
-          if (cameras[1]) {
-              // Use the rear/back camera by default
-              scanner.start(cameras[1]).then(() => {
+      function startScanner(cameras) {
+          if (cameras.length > 0) {
+              const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back')) || cameras[0];
+
+              // Start the back camera
+              scanner.start(backCamera).then(() => {
                   console.log('Using back camera');
-                  videoElement.srcObject = scanner._stream;
-              }).catch(function (e) {
-                  console.error('Failed to start back camera:', e);
+                  videoElement.srcObject = scanner._stream;  // Directly assign the stream to video element
+              }).catch((err) => {
+                  console.error('Back camera failed:', err);
               });
           } else {
-              // Otherwise, use the front camera
-              scanner.start(cameras[0]).then(() => {
-                  console.log('Using front camera');
-                  videoElement.srcObject = scanner._stream;
-              }).catch(function (e) {
-                  console.error('Failed to start front camera:', e);
-              });
+              alert('No cameras found.');
           }
-      } else {
-          console.error('No cameras found.');
       }
-  }).catch(function (e) {
-      console.error('Error accessing cameras:', e);
-  });
+
+      Instascan.Camera.getCameras().then(startScanner).catch(function(e) {
+          console.error('Error with camera:', e);
+      });
+
+      Instascan.Camera.getCameras().then(function (cameras) {
+          // If a camera is detected
+          if (cameras.length > 0) {
+              // If the user has a rear/back camera
+              if (cameras[1]) {
+                  // Use the rear/back camera by default
+                  scanner.start(cameras[1]).then(() => {
+                      console.log('Using back camera');
+                      videoElement.srcObject = scanner._stream;
+                  }).catch(function (e) {
+                      console.error('Failed to start back camera:', e);
+                  });
+              } else {
+                  // Otherwise, use the front camera
+                  scanner.start(cameras[0]).then(() => {
+                      console.log('Using front camera');
+                      videoElement.srcObject = scanner._stream;
+                  }).catch(function (e) {
+                      console.error('Failed to start front camera:', e);
+                  });
+              }
+          } else {
+              console.error('No cameras found.');
+          }
+      }).catch(function (e) {
+          console.error('Error accessing cameras:', e);
+      });
+
+      if (scanner._stream) {
+          videoElement.srcObject = scanner._stream;
+      } else {
+          console.error('No stream available');
+      }
   </script>
 </body>
 </html>
