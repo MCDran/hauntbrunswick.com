@@ -113,7 +113,10 @@
             console.error('Error with camera:', e);
         });
 
-        navigator.mediaDevices.getUserMedia({ video: true })
+        navigator.mediaDevices.getUserMedia({
+          video: {
+              facingMode: { exact: "environment" }  // Request the back camera
+          }})
         .then(function(stream) {
             videoElement.srcObject = stream; // Directly assign the stream
             scanner._stream = stream;  // Also assign it to the scanner object
