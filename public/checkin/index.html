@@ -43,95 +43,84 @@
 </style>
 </head>
 <body>
-    <h1>Scan Registrant QR Code</h1>
-    <video id="video" style="width:500px;"></video>
-    <div id="output"></div>
-    <button id="check-in-btn" style="display:none;">Check In</button>
+  <h1>Scan Registrant QR Code</h1>
+  <video id="video" style="width:500px;"></video>
+  <div id="output"></div>
+  <button id="check-in-btn" style="display:none;">Check In</button>
 
-    <script>
-        const videoElement = document.getElementById('video');
-        const outputElement = document.getElementById('output');
-        const checkInBtn = document.getElementById('check-in-btn');
+  <script>
+      const videoElement = document.getElementById('video');
+      const outputElement = document.getElementById('output');
+      const checkInBtn = document.getElementById('check-in-btn');
 
-        // Initialize the scanner
-        const scanner = new Instascan.Scanner({ video: videoElement });
-        scanner.addListener('scan', function(content) {
-            outputElement.textContent = `Scanned Content: ${content}`;
-            checkInBtn.style.display = 'block';  // Show the check-in button after scan
+      // Initialize the scanner
+      const scanner = new Instascan.Scanner({ video: videoElement });
+      scanner.addListener('scan', function(content) {
+          outputElement.textContent = `Scanned Content: ${content}`;
+          checkInBtn.style.display = 'block';  // Show the check-in button after scan
 
-            // Parse the scanned content (assuming it's in the format registrationNumber:email)
-            const [registrationNumber, email] = content.split(':');
+          // Parse the scanned content (assuming it's in the format registrationNumber:email)
+          const [registrationNumber, email] = content.split(':');
 
-            // Send the scanned data to the server for validation
-            fetch('/checkin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ registrationNumber, email })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
-                } else {
-                    outputElement.textContent = 'Registrant not found!';
-                }
-            })
-            .catch(error => {
-                outputElement.textContent = 'Error processing the QR code.';
-                console.error('Error:', error);
-            });
-        });
+          // Send the scanned data to the server for validation
+          fetch('/checkin', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ registrationNumber, email })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  outputElement.textContent = `Registrant: ${data.registrant.name} - Time Slot: ${data.registrant.timeSlot}`;
+              } else {
+                  outputElement.textContent = 'Registrant not found!';
+              }
+          })
+          .catch(error => {
+              outputElement.textContent = 'Error processing the QR code.';
+              console.error('Error:', error);
+          });
+      });
 
-        function startScanner(cameras) {
-            if (cameras.length > 0) {
-                const backCamera = cameras[0];
-                const frontCamera = cameras[cameras.length - 1];
+      function startScanner(cameras) {
+          if (cameras.length > 0) {
+              const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back')) || cameras[0];
 
-                // Try to start the front camera first
-                scanner.start(frontCamera).then(() => {
-                    console.log('Using front camera');
-                    videoElement.srcObject = scanner._stream;  // Directly assign the stream to video element
-                }).catch((e) => {
-                    console.warn('Front camera failed, switching to back camera:', e);
+              // Start the back camera
+              scanner.start(backCamera).then(() => {
+                  console.log('Using back camera');
+                  videoElement.srcObject = scanner._stream;  // Directly assign the stream to video element
+              }).catch((err) => {
+                  console.error('Back camera failed:', err);
+              });
+          } else {
+              alert('No cameras found.');
+          }
+      }
 
-                    // Fallback to back camera if front camera fails
-                    scanner.start(backCamera).then(() => {
-                        console.log('Using back camera');
-                        videoElement.srcObject = scanner._stream;  // Directly assign the stream to video element
-                    }).catch((err) => {
-                        console.error('Both cameras failed:', err);
-                    });
-                });
-            } else {
-                alert('No cameras found.');
-            }
-        }
+      Instascan.Camera.getCameras().then(startScanner).catch(function(e) {
+          console.error('Error with camera:', e);
+      });
 
-        Instascan.Camera.getCameras().then(startScanner).catch(function(e) {
-            console.error('Error with camera:', e);
-        });
+      navigator.mediaDevices.getUserMedia({
+        video: {
+            facingMode: "environment"  // Request the back camera
+        }})
+      .then(function(stream) {
+          videoElement.srcObject = stream; // Directly assign the stream
+          scanner._stream = stream;  // Also assign it to the scanner object
+      })
+      .catch(function(error) {
+          console.error('Failed to get media stream:', error);
+      });
 
-        navigator.mediaDevices.getUserMedia({
-          video: {
-              facingMode: "environment"  // Request the back camera
-          }})
-        .then(function(stream) {
-            videoElement.srcObject = stream; // Directly assign the stream
-            scanner._stream = stream;  // Also assign it to the scanner object
-        })
-        .catch(function(error) {
-            console.error('Failed to get media stream:', error);
-        });
-
-
-        if (scanner._stream) {
-            videoElement.srcObject = scanner._stream;
-        } else {
-            console.error('No stream available');
-        }
-
-    </script>
+      if (scanner._stream) {
+          videoElement.srcObject = scanner._stream;
+      } else {
+          console.error('No stream available');
+      }
+  </script>
 </body>
 </html>
