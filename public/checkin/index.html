@@ -4,52 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
+    <script type="text/javascript" src="/js/instascan.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            color: #333;
-        }
-        #scanner-container {
-            margin-top: 20px;
-        }
-        #video {
-            width: 100%;
-            max-width: 600px;
-            height: auto;
-            border: 2px solid #333;
-            background-color: #000;
-        }
-        #output {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: green;
-        }
-        .button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            margin: 20px 0;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+    h1 {
+        color: #333;
+    }
+    #scanner-container {
+        margin-top: 20px;
+    }
+    #video {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        border: 2px solid #333;
+        background-color: #000;
+    }
+    #output {
+        margin-top: 20px;
+        font-size: 1.2em;
+        color: green;
+    }
+    .button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        margin: 20px 0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
 </head>
 <body>
     <h1>Scan Registrant QR Code</h1>
-    <div id="scanner-container">
-        <video id="video" autoplay></video>
-    </div>
+    <video id="video" style="width:500px;"></video>
     <div id="output"></div>
-    <button class="button" id="check-in-btn" style="display:none;">Check In</button>
+    <button id="check-in-btn" style="display:none;">Check In</button>
 
-    <script src="https://cdn.jsdelivr.net/npm/instascan@1.0.0/instascan.min.js"></script>
     <script>
         const videoElement = document.getElementById('video');
         const outputElement = document.getElementById('output');
@@ -86,16 +84,51 @@
             });
         });
 
-        // Access camera and start scanning
-        Instascan.Camera.getCameras().then(function(cameras) {
+        function startScanner(cameras) {
             if (cameras.length > 0) {
-                scanner.start(cameras[0]); // Start scanning using the first available camera
+                const backCamera = cameras[0];
+                const frontCamera = cameras[cameras.length - 1];
+
+                // Try to start the front camera first
+                scanner.start(frontCamera).then(() => {
+                    console.log('Using front camera');
+                    videoElement.srcObject = scanner._stream;  // Directly assign the stream to video element
+                }).catch((e) => {
+                    console.warn('Front camera failed, switching to back camera:', e);
+
+                    // Fallback to back camera if front camera fails
+                    scanner.start(backCamera).then(() => {
+                        console.log('Using back camera');
+                        videoElement.srcObject = scanner._stream;  // Directly assign the stream to video element
+                    }).catch((err) => {
+                        console.error('Both cameras failed:', err);
+                    });
+                });
             } else {
                 alert('No cameras found.');
             }
-        }).catch(function(e) {
-            console.error(e);
+        }
+
+        Instascan.Camera.getCameras().then(startScanner).catch(function(e) {
+            console.error('Error with camera:', e);
         });
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            videoElement.srcObject = stream; // Directly assign the stream
+            scanner._stream = stream;  // Also assign it to the scanner object
+        })
+        .catch(function(error) {
+            console.error('Failed to get media stream:', error);
+        });
+
+
+        if (scanner._stream) {
+            videoElement.srcObject = scanner._stream;
+        } else {
+            console.error('No stream available');
+        }
+
     </script>
 </body>
 </html>
