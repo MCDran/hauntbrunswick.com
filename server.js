@@ -101,40 +101,6 @@ async function generateQRCode(registrationNumber, email) {
   }
 }
 
-app.get('/checkin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/checkin/index.html'));
-});
-
-// API route to handle QR code scan data
-app.post('/checkin', (req, res) => {
-  const { registrationNumber, email } = req.body;
-
-  // Lookup logic: You would fetch the registrant's details from your database here.
-  // For now, let's simulate this with a simple check.
-
-  // Simulated registrant data (replace this with actual database lookup)
-  const mockRegistrant = {
-    registrationNumber: '123456',
-    email: 'user@example.com',
-    name: 'John Doe',
-    timeSlot: '7:00 PM'
-  };
-
-  // Check if the scanned data matches the mock registrant data
-  if (registrationNumber === mockRegistrant.registrationNumber && email === mockRegistrant.email) {
-    res.status(200).json({
-      success: true,
-      message: 'Registrant found!',
-      registrant: mockRegistrant
-    });
-  } else {
-    res.status(404).json({
-      success: false,
-      message: 'Registrant not found!'
-    });
-  }
-});
-
 // In-memory storage of available spots (this could also be in the database)
 let availableSlots = {
     '6:00 PM': 20,
