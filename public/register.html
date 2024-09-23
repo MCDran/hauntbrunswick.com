@@ -217,21 +217,24 @@
         color: #fff;
     }
 
-    /* Mobile layout for screens smaller than 768px */
-    @media (max-width: 768px) {
-      .registration-container {
-          display: flex !important;
-          flex-direction: column !important;  /* Force stacking vertically */
-          width: 100% !important;  /* Ensure full width */
-      }
+    /* Target mobile devices with touch screens */
+    @media (pointer: coarse) and (hover: none) {
+        .registration-container {
+            display: block;  /* Force it to behave as a block */
+            width: 100%;  /* Full width for the container */
+        }
 
-      .time-slots {
-          order: -1 !important;  /* Move time slots above form */
-          width: 100% !important;  /* Full width */
-      }
+        /* Ensure time slots appear above the form */
+        .time-slots {
+            display: block;  /* Ensure time slots behave as block */
+            order: -1;  /* Move time slots above the form */
+            width: 100%;  /* Full width for time slots */
+            margin-bottom: 20px;  /* Add space below the time slots */
+        }
 
         /* Ensure the form takes up the full width */
         #registrations {
+            display: block;  /* Ensure form behaves as block */
             width: 100%;  /* Full width for the form */
         }
 
@@ -252,8 +255,11 @@
         /* Adjust form layout for mobile */
         form {
             width: 100%;  /* Full width form */
+            display: block;  /* Ensure the form behaves as block */
         }
     }
+
+
 
 
     </style>

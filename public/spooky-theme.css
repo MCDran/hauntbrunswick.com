@@ -46,16 +46,48 @@ input[type="text"], input[type="email"], select {
     color: #fff;
 }
 
-/* Responsive design: stack vertically on smaller screens */
-@media (max-width: 768px) {
+/* Target mobile devices with touch screens */
+@media (pointer: coarse) and (hover: none) {
     .registration-container {
-        flex-direction: column; /* Stack time slots and form vertically */
+        display: block;  /* Force it to behave as a block */
+        width: 100%;  /* Full width for the container */
     }
 
-    .time-slots, #registrations {
-        max-width: 100%; /* Full width on smaller screens */
+    /* Ensure time slots appear above the form */
+    .time-slots {
+        display: block;  /* Ensure time slots behave as block */
+        order: -1;  /* Move time slots above the form */
+        width: 100%;  /* Full width for time slots */
+        margin-bottom: 20px;  /* Add space below the time slots */
+    }
+
+    /* Ensure the form takes up the full width */
+    #registrations {
+        display: block;  /* Ensure form behaves as block */
+        width: 100%;  /* Full width for the form */
+    }
+
+    /* Make input fields larger and easier to interact with */
+    input[type="text"], input[type="email"], select {
+        width: 100%;  /* Full width for inputs on small screens */
+        font-size: 1.2rem;  /* Larger text for easier typing */
+        padding: 12px;  /* Increase padding for touch-friendly design */
+    }
+
+    /* Ensure buttons are full width and touch-friendly */
+    .button {
+        width: 100%;  /* Full width buttons */
+        font-size: 1.2rem;  /* Larger button text */
+        padding: 15px;  /* Larger button padding for easier touch interaction */
+    }
+
+    /* Adjust form layout for mobile */
+    form {
+        width: 100%;  /* Full width form */
+        display: block;  /* Ensure the form behaves as block */
     }
 }
+
 
 /* Dark background for the text on the index page */
 .index-text {
