@@ -570,6 +570,8 @@ app.post('/submit', (req, res) => {
                     <h1>Thank you for registering!</h1>
                     <p>You have registered ${names.length} person(s) for the ${timeSlot} time slot.</p>
                     <p>Your registration number is <strong>${registrationNumber}</strong>. Please keep this number for future reference.</p>
+                    <p>Please check your email for a confirmation message from us. If you do not see it in your inbox, please check your spam folder.</p>
+                    <p>There will be a QR Code in your email, please save or screenshot the QR code for admittance into the haunt. </p>
                     <a href="/">Go back to the home page</a>
                 `);
             });

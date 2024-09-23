@@ -8,18 +8,43 @@
     <style>
         body {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #0b0c0d; /* Ensure dark spooky background */
+            background-color: #0b0c0d;
+            margin: 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            align-items: center;
+        }
+
+        .left, .right {
+            background-size: cover;
+            background-position: center;
+            height: 100%;
+        }
+
+        .left {
+            background-image: url('left-image.jpg');
+        }
+
+        .right {
+            background-image: url('right-image.jpg');
         }
 
         .content {
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            max-width: 500px;
+            margin: 0 auto;
         }
 
         h1 {
@@ -39,24 +64,42 @@
         a.button {
             font-size: 1.2rem;
             text-transform: uppercase;
-            margin: 20px 0;
+            background-color: #ff4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
-        /* Glow effect for button hover */
         a.button:hover {
-            animation: glow 1.5s infinite alternate;
+            background-color: #ffcc00;
+            color: black;
+            box-shadow: 0 0 15px #ffcc00;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr 1fr;
+            }
+            .left, .right {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-  <a href="/view.html" class="button top-right">Already Registered?</a>
-    <div class="content">
-        <h1>Welcome to Haunt Brunswick</h1>
-        <p class="index-date">Join us on October 27th!</p>
-        <a href="/register.html" class="button">Pick a Time</a>
+    <div class="container">
+        <div class="left"></div>
+        <div class="content">
+            <h1>Welcome to Haunt Brunswick</h1>
+            <p>Join us on October 27th!</p>
+            <a href="/register.html" class="button">Pick a Time</a>
+            <p>V0.5.1</p>
+        </div>
+        <div class="right"></div>
     </div>
-    <!-- Blood overlay effect -->
-    <p class="version">V0.5.0</p>
-    <div id="overlay">  <div class="circle3"></div></div>
 </body>
 </html>

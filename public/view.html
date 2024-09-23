@@ -10,7 +10,88 @@
         form { display: inline-block; text-align: left; }
     </style>
     <link rel="stylesheet" href="spooky-theme.css">
+    <style>
+     body {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 100vh;
+         margin: 0;
+         background-color: #0b0c0d; /* Spooky dark background */
+     }
 
+     .content {
+         background-color: rgba(0, 0, 0, 0.8);
+         padding: 30px;
+         border-radius: 15px;
+         box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+         max-width: 500px;
+         width: 100%;
+         text-align: center;
+     }
+
+     h1 {
+         font-family: 'Creepster', cursive, sans-serif;
+         font-size: 3rem;
+         color: #ff4444;
+         text-shadow: 3px 3px 10px black;
+         margin-bottom: 20px;
+     }
+
+     label {
+         color: #ffcc00;
+         font-size: 1.2rem;
+         text-shadow: 1px 1px 5px black;
+         display: block;
+         margin-bottom: 10px;
+     }
+
+     input[type="text"], input[type="email"] {
+         width: 100%;
+         padding: 10px;
+         margin-bottom: 20px;
+         border-radius: 5px;
+         border: 1px solid #ff4444;
+         background-color: #8B0000;
+         color: #fff;
+         font-size: 1rem;
+     }
+
+     button {
+         padding: 10px 20px;
+         background-color: #ff4444;
+         color: #fff;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+         font-size: 1.2rem;
+         text-transform: uppercase;
+         transition: background-color 0.3s ease, color 0.3s ease;
+     }
+
+     button:hover {
+         background-color: #ffcc00;
+         color: #000;
+         box-shadow: 0 0 15px #ffcc00;
+     }
+
+     #registration-details {
+         margin-top: 20px;
+         color: #ffcc00;
+         font-size: 1.2rem;
+     }
+
+     /* Responsive Design */
+     @media (max-width: 768px) {
+         .content {
+             padding: 20px;
+         }
+
+         h1 {
+             font-size: 2.5rem;
+         }
+     }
+ </style>
 </head>
 <body>
     <h1>View or Modify Your Registration</h1>

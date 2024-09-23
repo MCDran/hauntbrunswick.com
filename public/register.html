@@ -26,7 +26,7 @@
         justify-content: space-between;
         gap: 20px;
         padding: 20px;
-        background-color: rgba(0, 0, 0, 0.8); /* Single black box */
+        background-color: rgba(0, 0, 0, 0.9); /* Single black box */
         border-radius: 10px;
         box-shadow: none; /* Remove any glow around the box */
         max-width: 800px;
@@ -49,6 +49,112 @@
     .time-slot {
         margin: 10px 0;
     }
+
+    /* Style for the time slot section */
+    .time-slot {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Make the radio buttons bigger and more square with rounded edges */
+    input[type="radio"] {
+        appearance: none;
+        width: 30px;  /* Adjust size */
+        height: 30px;
+        border: 2px solid #ff4444;  /* Border color */
+        border-radius: 8px;  /* Rounded edges */
+        background-color: #1a1a1a;
+        cursor: pointer;
+        margin-right: 10px;  /* Space between the radio button and text */
+        position: relative;
+    }
+
+    /* Checkmark inside the radio button */
+    input[type="radio"]::after {
+        content: '';
+        display: block;
+        width: 5px;
+        height: 5px;
+        border-radius: 4px;
+        background-color: #1a1a1a;  /* Color of checkmark */
+        transform: scale(0);  /* Initially hidden */
+        transition: transform 0.2s ease-in-out;
+        position: absolute;
+        top: 7px;
+        left: 7px;
+    }
+
+    /* When the radio button is checked, animate checkmark */
+    input[type="radio"]:checked::after {
+        transform: translateX(0) scale(1);  /* Bring it to position and show it */
+        animation: slideBlink 8s ease-in-out infinite alternate;
+    }
+
+    /* Create the eyelid effect */
+    input[type="radio"]::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: #ff4444;  /* Eyelid color */
+        z-index: 1;  /* In front of the checkmark */
+        overflow: hidden;
+        border-radius: 8px;
+        visibility: hidden; /* Initially hidden */
+    }
+
+    /* Eyelid effect while checked */
+    input[type="radio"]:checked::before {
+        visibility: visible;
+        animation: eyeLid 8s ease-in-out infinite alternate;
+    }
+
+    /* Keyframes for sliding and blinking */
+    @keyframes slideBlink {
+        0% {
+            transform: translateX(0) scale(1);
+        }
+        50% {
+            transform: translateX(-6px) scale(1);  /* Slide to the left */
+        }
+        100% {
+            transform: translateX(0) scale(1);  /* Return to the original position */
+        }
+    }
+
+    /* Keyframes for eyelid animation */
+    @keyframes eyeLid {
+        0% {
+            height: 0;
+            top: 50%;  /* Start in the middle */
+        }
+        5% {
+            height: 90%;
+            top: 5%;  /* Expand to cover the whole radio button */
+        }
+        85%{
+          height: 90%;
+          top: 5%;
+        }
+        100% {
+            height: 0;
+            top: 50%;  /* Return to the middle, creating the blink effect */
+        }
+    }
+
+
+    /* Ensure the label text is selectable */
+    label {
+        color: #ffcccc;
+        font-size: 1.2rem;
+        cursor: pointer;  /* Make it clickable */
+        user-select: text;  /* Allow text selection */
+        margin-left: 10px;
+    }
+
 
     /* Remove form borders and box styling */
     form {
@@ -111,16 +217,45 @@
         color: #fff;
     }
 
-    /* Responsive design: stack time slots and form vertically on smaller screens */
+    /* Mobile layout for screens smaller than 768px */
     @media (max-width: 768px) {
-        .registration-container {
-            flex-direction: column; /* Stack vertically on small screens */
+      .registration-container {
+          display: flex !important;
+          flex-direction: column !important;  /* Force stacking vertically */
+          width: 100% !important;  /* Ensure full width */
+      }
+
+      .time-slots {
+          order: -1 !important;  /* Move time slots above form */
+          width: 100% !important;  /* Full width */
+      }
+
+        /* Ensure the form takes up the full width */
+        #registrations {
+            width: 100%;  /* Full width for the form */
         }
 
-        .time-slots, #registrations {
-            max-width: 100%; /* Full width for small screens */
+        /* Make input fields larger and easier to interact with */
+        input[type="text"], input[type="email"], select {
+            width: 100%;  /* Full width for inputs on small screens */
+            font-size: 1.2rem;  /* Larger text for easier typing */
+            padding: 12px;  /* Increase padding for touch-friendly design */
+        }
+
+        /* Ensure buttons are full width and touch-friendly */
+        .button {
+            width: 100%;  /* Full width buttons */
+            font-size: 1.2rem;  /* Larger button text */
+            padding: 15px;  /* Larger button padding for easier touch interaction */
+        }
+
+        /* Adjust form layout for mobile */
+        form {
+            width: 100%;  /* Full width form */
         }
     }
+
+
     </style>
 </head>
 <body>
