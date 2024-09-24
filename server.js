@@ -172,12 +172,9 @@ app.post('/view-registration', (req, res) => {
                     <label for="age${index + 1}">Age:</label>
                     <select id="age${index + 1}" name="ages[]" required>
                         <option value="16-20" ${agesArray[index] === '16-20' ? 'selected' : ''}>16-20</option>
-                        <option value="21-30" ${agesArray[index] === '21-30' ? 'selected' : ''}>21-30</option>
-                        <option value="31-40" ${agesArray[index] === '31-40' ? 'selected' : ''}>31-40</option>
-                        <option value="41-50" ${agesArray[index] === '41-50' ? 'selected' : ''}>41-50</option>
-                        <option value="51+" ${agesArray[index] === '51+' ? 'selected' : ''}>51+</option>
+                        <option value="21+" ${agesArray[index] === '21+' ? 'selected' : ''}>21+</option>
                     </select>
-                    <button type="button" onclick="removeAttendee(${index + 1})">Remove</button>
+                    <button type="button" class="remove" onclick="removeAttendee(${index + 1})">Remove</button>
                 </div>
             `;
         });
@@ -471,6 +468,10 @@ app.get('/', (req, res) => {
 
 app.get('/register.html', (req, res) => {
     res.sendFile(__dirname + '/public/register.html');
+});
+
+app.get('/formtest', (req, res) => {
+    res.sendFile(__dirname + '/public/formtest.html');
 });
 
 app.get('/spots', (req, res) => {

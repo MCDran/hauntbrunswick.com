@@ -13,11 +13,13 @@
             height: 100vh;
             background-color: #0b0c0d;
             margin: 0;
+            overflow: hidden;
         }
 
         .container {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
+            position: relative;
+            width: 100%;
+            height: 100vh;
             height: 100%;
             width: 100%;
             text-align: center;
@@ -39,6 +41,10 @@
         }
 
         .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: rgba(0, 0, 0, 0.8);
             padding: 30px;
             border-radius: 15px;
@@ -70,10 +76,11 @@
             border-radius: 5px;
             text-decoration: none;
             transition: all 0.3s ease;
+            width: 70%;
         }
 
         a.button:hover {
-            background-color: #ffcc00;
+            background-color: #880000;
             color: black;
             box-shadow: 0 0 15px #ffcc00;
         }
@@ -81,6 +88,7 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
+                bottom: 100px;
                 grid-template-columns: 1fr;
                 grid-template-rows: 1fr 1fr 1fr;
             }
@@ -98,7 +106,6 @@
             <p>Join us on October 27th!</p>
             <a href="/register.html" class="button">Pick a Time</a>
         </div>
-        <p>V0.5.2</p>
         <div class="right"></div>
     </div>
 </body>
