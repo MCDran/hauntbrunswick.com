@@ -12,21 +12,20 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // MySQL connection setup
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
     host: '100.87.150.78',  // 192.168.100.100
     port: '3667',
     user: 'valak',
     password: 'SLEEP4tG',
-    database: 'MYSQL_DATABASE'
+    database: 'MYSQL_DATABASE',
+    connectionLimit: 10  // Adjust as needed
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err.stack);
-        return;
-    }
-    console.log('Connected to MySQL');
-});
+setInterval(() => {
+    connection.query('SELECT 1', (err) => {
+        if (err) console.error('Error with keep-alive query:', err);
+    });
+}, 10000); // Ping every 10 seconds
 
 connection.query('SELECT 1 + 1 AS solution', (err, results) => {
     if (err) {
@@ -391,6 +390,7 @@ app.get('/admin', checkAdminAuth, (req, res) => {
                     <th>Ages</th>
                     <th>Action</th>
                 </tr>
+                <p>V0.5.5</p>
         `;
 
         results.forEach(registration => {
