@@ -51,9 +51,20 @@
       }
       .form-container {
           display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          width: 100%;
+          flex-direction: row; /* Ensure time slots and form fields are side by side */
+          justify-content: space-between;
+          gap: 20px; /* Add space between the sections */
+          align-items: flex-start; /* Align items at the top */
+      }
+
+      .left {
+          flex: 1; /* Set the time slots section to take up equal space */
+          min-width: 300px; /* Ensure time slots have enough space */
+      }
+
+      .right {
+          flex: 2; /* Give the registration section a bit more space */
+          min-width: 300px; /* Ensure the registration fields section has enough space */
       }
       form {
         background-color: rgba(0, 0, 0, 0.8);
@@ -62,6 +73,7 @@
       }
       .button {
         padding: 10px 20px;
+        margin: 10px;
         background-color: #000;
         color: #fff;
         text-decoration: none;
@@ -72,20 +84,54 @@
       select[name="ages[]"] {
         margin-bottom: 15px; /* Adjust the bottom padding/margin as needed */
       }
+
+      .checkbox-group {
+          margin-top: 20px;
+      }
+
+      .checkbox-group label {
+          font-size: 1rem;
+          color: #ffcc00;
+          margin-left: 10px;
+          display: inline;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          vertical-align: middle;
+      }
+      .attendee {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .age-and-remove {
+          display: flex;
+          align-items: center; /* Keep them aligned vertically */
+          gap: 5px; /* Adjust this value to reduce the space between label and dropdown */
+      }
+
+      .age-and-remove label {
+          margin-right: 5px; /* Controls the spacing between label and dropdown */
+      }
+
       .remove-button {
-        background-color: #ff4444; /* Red background */
-        color: white; /* White text */
-        border: none; /* No border */
-        padding: 8px 12px; /* Padding for the button */
-        margin-bottom: 15px;
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+          margin-left: auto; /* Push the remove button to the right */
+          padding: 8px 12px;
+          background-color: #ff4444;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
       }
 
       .remove-button:hover {
-        background-color: #cc0000; /* Darker red on hover */
+          background-color: #cc0000;
       }
+
 
       input[type="text"], input[type="email"], select {
         width: calc(100% - 20px);
@@ -207,11 +253,27 @@
             width: 90%;
           }
           .form-container {
-              flex-direction: column;
+              display: flex;
+              flex-direction: row; /* Ensures the form is displayed horizontally */
+              justify-content: space-between;
+              gap: 20px; /* Add space between the left and right sections */
           }
-          .left, .right{
-            min-width: 100px;
+
+          .left {
+              flex: 1;
+              min-width: 300px; /* Set a minimum width for the time slots section */
           }
+
+          .right {
+              flex: 2; /* Make the registration section wider */
+          }
+          .text-fields input[type="text"],
+          .text-fields input[type="email"],
+          .text-fields select {
+              width: 100%; /* Ensures the input fields take the full width of the container */
+              box-sizing: border-box; /* Prevents overflow */
+          }
+
       }
     </style>
 </head>
@@ -239,16 +301,27 @@
                     <div class="attendee" id="attendee-1">
                         <label for="name1">Name:</label>
                         <input type="text" id="name1" name="names[]" class="form-control" required>
-                        <label for="age1">Age:</label>
-                        <select id="age1" name="ages[]" required>
-                            <option value="" disabled selected>Select age</option>
-                            <option value="16-20">16-20</option>
-                            <option value="21+">21+</option>
-                        </select>
+
+                        <div class="age-and-remove">
+                            <label for="age1">Age:</label>
+                            <select id="age1" name="ages[]" required>
+                                <option value="" disabled selected>Select age</option>
+                                <option value="16-20">16-20</option>
+                                <option value="21+">21+</option>
+                            </select>
+                            <button type="button" class="remove-button" onclick="removeAttendee('attendee-1')">Remove</button>
+                        </div>
                     </div>
+
 
                     <div id="attendee-list"></div>
                     <button class="button" type="button" id="add-attendee">Add Another Attendee</button><br><br>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="what-to-expect" name="what-to-expect" required>
+                        <label for="what-to-expect">
+                            I/We have read, understood, and agree to the <a href="/what-to-expect" target="_blank" id="what-to-expect-link">What to Expect</a> for the 16+ night.
+                        </label>
+                    </div>
                     <button class="button" type="submit">Register</button>
                 </div>
             </div>
@@ -288,15 +361,18 @@
             newAttendee.innerHTML = `
                 <label for="name${attendeeCount}">Name:</label>
                 <input type="text" id="name${attendeeCount}" name="names[]" required>
-                <label for="age${attendeeCount}">Age:</label>
-                <select id="age${attendeeCount}" name="ages[]" required>
-                    <option value="" disabled selected>Select age</option>
-                    <option value="16-20">16-20</option>
-                    <option value="21+">21+</option>
-                </select>
-                <button type="button" class="remove-button" onclick="removeAttendee('attendee-${attendeeCount}')">Remove</button>
+
+                <div class="age-and-remove">
+                    <label for="age${attendeeCount}">Age:</label>
+                    <select id="age${attendeeCount}" name="ages[]" required>
+                        <option value="" disabled selected>Select age</option>
+                        <option value="16-20">16-20</option>
+                        <option value="21+">21+</option>
+                    </select>
+                    <button type="button" class="remove-button" onclick="removeAttendee('attendee-${attendeeCount}')">Remove</button>
+                </div>
             `;
-            attendeeList.appendChild(newAttendee); // Append the new attendee inside the attendee list div
+            attendeeList.appendChild(newAttendee);
         });
 
         // Remove attendee fields

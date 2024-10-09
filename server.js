@@ -474,6 +474,14 @@ app.get('/formtest', (req, res) => {
     res.sendFile(__dirname + '/public/formtest.html');
 });
 
+app.get('/faq', (req, res) => {
+  res.sendFile(__dirname + '/public/faq.html');
+});
+
+app.get('/what-to-expect', (req, res) => {
+  res.sendFile(__dirname + '/public/wte.html');
+});
+
 app.get('/spots', (req, res) => {
     const sql = 'SELECT time_slot, spots_remaining FROM time_slots';
     connection.query(sql, (err, results) => {
@@ -559,7 +567,7 @@ app.post('/submit', (req, res) => {
                 }
 
                 //Send email
-                const viewUrl = `https://your-domain.com/view-registration?number=${registrationNumber}`;
+                const viewUrl = `https://hauntbrunswick.com/view-registration?number=${registrationNumber}`;
                 sendRegistrationEmail(email, registrationNumber, timeSlot, names, viewUrl);
 
                 // Return a confirmation
@@ -584,4 +592,5 @@ app.post('/submit', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`Version 1.0.0`)
 });

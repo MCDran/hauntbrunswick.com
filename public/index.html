@@ -7,24 +7,23 @@
     <link rel="stylesheet" href="spooky-theme.css">
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #0b0c0d;
-            margin: 0;
-            overflow: hidden;
+          display: block; /* Allow the content to stack vertically */
+          min-height: 100vh;
+          background-color: #0b0c0d;
+          margin: 0;
+          overflow-x: hidden; /* Prevent horizontal scrolling */
+          overflow-y: auto; /* Allow full vertical scrolling */
         }
 
         .container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            height: 100%;
-            width: 100%;
-            text-align: center;
-            align-items: center;
+          position: relative;
+          width: 100%;
+          max-width: 100%;
+          padding: 20px;
+          text-align: center;
+          align-items: center;
         }
+
 
         .left, .right {
             background-size: cover;
@@ -41,16 +40,13 @@
         }
 
         .content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background-color: rgba(0, 0, 0, 0.8);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
             max-width: 500px;
-            margin: 0 auto;
+            margin: 20px auto;
+            overflow: auto; /* Allow content to scroll if it exceeds the content box size */
         }
 
         h1 {
@@ -60,11 +56,15 @@
             text-shadow: 3px 3px 10px black;
         }
 
+        h1, h2 {
+            margin: 10px;
+        }
+
         p {
             font-size: 1.5rem;
             color: #ffcc00;
             text-shadow: 1px 1px 5px black;
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         a.button {
@@ -76,7 +76,7 @@
             border-radius: 5px;
             text-decoration: none;
             transition: all 0.3s ease;
-            width: 70%;
+            width: 75%;
         }
 
         a.button:hover {
@@ -84,6 +84,21 @@
             color: black;
             box-shadow: 0 0 15px #ffcc00;
         }
+
+        .logo-container {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .small-logo {
+            width: 100px; /* Adjust as necessary */
+            height: auto;
+        }
+
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -100,14 +115,42 @@
 </head>
 <body>
     <div class="container">
-        <div class="left"></div>
-        <div class="content">
-            <h1>Welcome to Haunt Brunswick</h1>
-            <p>Join us on October 27th!</p>
-            <a href="/register.html" class="button">Pick the Time</a>
-        </div>
-        <a href="/view.html" class="top-right">Already Registered?</a>
-        <div class="right"></div>
-    </div>
+      <div class="container">
+          <div class="left"></div>
+          <a href="/faq" class="top-left">Tell me More!</a>
+          <div class="content">
+              <h1>Welcome to Haunt Brunswick</h1>
+              <h2>Brunswick's Finest Haunted House</h2>
+              <p>Join us on October 26th and 27th!</p>
+              <a href="/register.html" class="button">Register for 16+ Night</a>
+
+              <!-- What to Expect Section -->
+              <h2>What to Expect</h2>
+              <div class="expect-section">
+                  <h3>All-Ages Nights</h3>
+                  <ul>
+                      <li>Spooky Atmosphere with dim lighting and eerie sound effects.</li>
+                      <li>Friendly Haunts with toned-down costumes and makeup.</li>
+                      <li>No Jump Scares—just light spookiness for family fun.</li>
+                      <li>Gentle Zones with softer visuals, ideal for younger visitors.</li>
+                  </ul>
+
+                  <h3>16+ Night (Sunday)</h3>
+                  <ul>
+                      <li>Darker Themes with unsettling, creepy settings.</li>
+                      <li>Jump Scares and Startles from actors ready to surprise you.</li>
+                      <li>Close Encounters—actors may get close, and static props may brush against you.</li>
+                      <li>Scarier Sound Effects with unnerving noises that make you feel watched.</li>
+                      <li>Disturbing Props including dead bodies, organs, and grotesque scenes.</li>
+                  </ul>
+              </div>
+          </div>
+          <a href="/view.html" class="top-right">Already Registered?</a>
+          <div class="right"></div>
+          <div class="logo-container">
+              <img src="logos/CBPR_logo_final.png" alt="City of Brunswick Parks and Recreation" class="small-logo">
+              <img src="logos/COB-Logo_RGB.png" alt="City of Brunswick Maryland" class="small-logo">
+          </div>
+      </div>
 </body>
 </html>
